@@ -1,2 +1,28 @@
 # Project-Stargate
 Astronomer's all-in-one app.
+
+## Repository structure
+
+```text
+ProjectStargate/
+├── README.md
+├── docs/
+│   ├── PROJECT_VISION.md
+│   ├── CORE_PHILOSOPHY.md
+│   ├── UI_SPECIFICATION.md
+│   ├── MODE_ARCHITECTURE.md
+│   ├── STARGAZING_MODE.md
+│   ├── EXPLORATION_MODE.md
+│   ├── TELESCOPE_MODE.md
+│   ├── ANALYSIS_MODE.md
+│   ├── KEPLER_EFFECT_MODE.md
+│   ├── GUIDED_TOURS.md
+│   ├── PREMIUM_MODULES.md
+│   ├── UX_GUIDELINES.md
+│   └── ROADMAP.md
+└── .github/
+    └── copilot-instructions.md
+```
+
+## Docs
+See the `docs/` folder for design docs, mode specs, UX guidelines, and the roadmap.
