@@ -20,6 +20,26 @@
         <span class="topbar-note">A local astronomy prototype</span>
       </header>
 
+      <section class="name-search" aria-labelledby="name-search-title">
+        <form id="name-search-form" class="name-search-form">
+          <label id="name-search-title" for="name-search-input">Find a star by name</label>
+          <div class="name-search-controls">
+            <input
+              id="name-search-input"
+              name="star-name"
+              type="search"
+              placeholder="Try Sirius or Betelgeuse"
+              autocomplete="off"
+              maxlength="80"
+              required
+            >
+            <button id="name-search-button" type="submit">Search</button>
+          </div>
+        </form>
+        <p id="name-search-status" class="name-search-status" role="status" aria-live="polite"></p>
+        <div id="name-search-results" class="name-search-results" aria-label="Star name search results" hidden></div>
+      </section>
+
       <section class="intro" aria-labelledby="page-title">
         <p class="eyebrow"><span class="live-dot"></span> TESS INPUT CATALOG · NASA MAST</p>
         <h1 id="page-title">Our neighborhood,<br><span>star by star.</span></h1>
@@ -70,8 +90,8 @@
 
       <footer class="footer">
         <p>
-          Catalog distances are converted from parsecs using 1 pc ≈ 3.26156 light-years.
-          Values and uncertainties come from TIC; stars without a usable distance are omitted.
+          Nearby catalog distances are converted from parsecs using 1 pc ≈ 3.26156 light-years.
+          Name searches use SIMBAD parallax when no reliable TIC cross-match is available.
         </p>
         <a href="https://mast.stsci.edu/api/v0/" target="_blank" rel="noreferrer">
           Data: NASA MAST <span aria-hidden="true">↗</span>
@@ -86,7 +106,7 @@
       <p class="eyebrow">TESS INPUT CATALOG</p>
       <h2 id="detail-title">Star details</h2>
       <dl id="detail-fields" class="detail-fields"></dl>
-      <p class="detail-note">Catalog measurements, not a distance estimate made by this app.</p>
+      <p class="detail-note">Distances use TIC values when matched, or are calculated from SIMBAD parallax when needed.</p>
     </dialog>
   </body>
 </html>
