@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#08111f">
+    <title>Nearspace — Star Distance Explorer</title>
+    <link rel="preconnect" href="https://mast.stsci.edu">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./app.js" type="module"></script>
+  </head>
+  <body>
+    <div class="sky-glow" aria-hidden="true"></div>
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Nearspace home">
+          <span class="brand-mark" aria-hidden="true">✳</span>
+          <span>NEARSPACE</span>
+        </a>
+        <span class="topbar-note">A local astronomy prototype</span>
+      </header>
+
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow"><span class="live-dot"></span> TESS INPUT CATALOG · NASA MAST</p>
+        <h1 id="page-title">Our neighborhood,<br><span>star by star.</span></h1>
+        <p class="intro-copy">
+          Explore cataloged stars by their distance from the Sun. Choose a radius
+          and start with the nearest neighbors.
+        </p>
+      </section>
+
+      <section class="explorer" aria-label="Nearby star catalog">
+        <div class="filter-heading">
+          <div>
+            <p class="eyebrow">DISTANCE FROM THE SUN</p>
+            <h2>Set your radius</h2>
+          </div>
+          <span class="unit-note">Distances shown in light-years</span>
+        </div>
+        <div class="distance-options" role="group" aria-label="Maximum distance">
+          <button class="distance-option" type="button" data-distance="10" aria-pressed="false">
+            <span class="option-value">10</span><span class="option-unit">LY</span>
+          </button>
+          <button class="distance-option is-selected" type="button" data-distance="25" aria-pressed="true">
+            <span class="option-value">25</span><span class="option-unit">LY</span>
+          </button>
+          <button class="distance-option" type="button" data-distance="50" aria-pressed="false">
+            <span class="option-value">50</span><span class="option-unit">LY</span>
+          </button>
+          <button class="distance-option" type="button" data-distance="100" aria-pressed="false">
+            <span class="option-value">100</span><span class="option-unit">LY</span>
+          </button>
+        </div>
+
+        <div class="results-header">
+          <div>
+            <h2 id="results-title">Stars within 25 light-years</h2>
+            <p id="results-summary" class="muted">Loading nearby stars from MAST…</p>
+          </div>
+          <span class="sort-label"><span aria-hidden="true">↕</span> Nearest first</span>
+        </div>
+
+        <div id="status" class="status" role="status" aria-live="polite">
+          <span class="loading-spinner" aria-hidden="true"></span>
+          <span>Connecting to NASA MAST catalog…</span>
+        </div>
+        <div id="results" class="star-list" aria-labelledby="results-title"></div>
+        <nav id="pagination" class="pagination" aria-label="Star list pages" hidden></nav>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Catalog distances are converted from parsecs using 1 pc ≈ 3.26156 light-years.
+          Values and uncertainties come from TIC; stars without a usable distance are omitted.
+        </p>
+        <a href="https://mast.stsci.edu/api/v0/" target="_blank" rel="noreferrer">
+          Data: NASA MAST <span aria-hidden="true">↗</span>
+        </a>
+      </footer>
+    </main>
+
+    <dialog id="star-detail" class="detail-dialog" aria-labelledby="detail-title">
+      <form method="dialog">
+        <button class="dialog-close" aria-label="Close star details">×</button>
+      </form>
+      <p class="eyebrow">TESS INPUT CATALOG</p>
+      <h2 id="detail-title">Star details</h2>
+      <dl id="detail-fields" class="detail-fields"></dl>
+      <p class="detail-note">Catalog measurements, not a distance estimate made by this app.</p>
+    </dialog>
+  </body>
+</html>
