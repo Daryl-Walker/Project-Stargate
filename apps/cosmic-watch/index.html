@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#07111f">
+    <title>Cosmic Watch — Small-Body Tracker</title>
+    <link rel="preconnect" href="https://ssd-api.jpl.nasa.gov">
+    <link rel="preconnect" href="https://ssd.jpl.nasa.gov">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./app.js" type="module"></script>
+  </head>
+  <body>
+    <div class="sky-glow" aria-hidden="true"></div>
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Cosmic Watch home">
+          <span class="brand-mark" aria-hidden="true">✳</span>
+          <span>COSMIC WATCH</span>
+        </a>
+        <span class="topbar-note">Small-body tracker & observing planner</span>
+      </header>
+
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow"><span class="live-dot"></span> NASA/JPL SOLAR SYSTEM DYNAMICS</p>
+        <h1 id="page-title">Keep an eye on<br><span>what's out there.</span></h1>
+        <p class="intro-copy">
+          Explore near-Earth objects, the asteroid belt, and Kuiper Belt objects.
+          Plan local comet and meteor-shower observing from your location.
+        </p>
+      </section>
+
+      <section class="location-panel" aria-labelledby="location-title">
+        <div class="location-copy">
+          <p class="eyebrow">YOUR OBSERVING SITE</p>
+          <h2 id="location-title">Set your location</h2>
+          <p id="location-status" class="muted">Location stays in this browser session. Coordinates are sent to JPL only when you request a comet forecast.</p>
+        </div>
+        <form id="location-form" class="location-controls">
+          <label>
+            <span>Latitude</span>
+            <input id="latitude" name="latitude" type="number" min="-90" max="90" step="any" placeholder="e.g. 40.7128" required>
+          </label>
+          <label>
+            <span>Longitude</span>
+            <input id="longitude" name="longitude" type="number" min="-180" max="180" step="any" placeholder="e.g. -74.0060" required>
+          </label>
+          <button class="button button-primary" type="submit">Set location</button>
+          <button id="use-location" class="button button-secondary" type="button">Use my location</button>
+        </form>
+      </section>
+
+      <section class="workspace" aria-label="Small-body explorer">
+        <div class="tabs" role="tablist" aria-label="Object category">
+          <button class="tab is-active" id="tab-neos" type="button" role="tab" aria-selected="true" aria-controls="object-panel" data-category="neos">Near-Earth objects</button>
+          <button class="tab" id="tab-asteroids" type="button" role="tab" aria-selected="false" aria-controls="object-panel" data-category="asteroids">Asteroid belt</button>
+          <button class="tab" id="tab-kbos" type="button" role="tab" aria-selected="false" aria-controls="object-panel" data-category="kbos">Kuiper Belt</button>
+          <button class="tab" id="tab-comets" type="button" role="tab" aria-selected="false" aria-controls="object-panel" data-category="comets">Comets</button>
+          <button class="tab" id="tab-showers" type="button" role="tab" aria-selected="false" aria-controls="shower-panel" data-category="showers">Meteor showers</button>
+        </div>
+
+        <section id="object-panel" class="panel" role="tabpanel" aria-labelledby="tab-neos">
+          <div class="panel-heading">
+            <div>
+              <p id="category-eyebrow" class="eyebrow">JPL SMALL-BODY DATABASE</p>
+              <h2 id="category-title">Near-Earth objects</h2>
+              <p id="list-summary" class="muted">Loading current orbital data…</p>
+            </div>
+            <button id="refresh-list" class="button button-secondary" type="button">Refresh</button>
+          </div>
+          <label class="filter-label" for="object-filter">Filter this list</label>
+          <input id="object-filter" class="text-input" type="search" placeholder="Search by name, designation, or orbit class" autocomplete="off">
+          <div id="list-status" class="list-status" role="status" aria-live="polite">Loading JPL object data…</div>
+          <div id="object-list" class="object-list"></div>
+        </section>
+
+        <section id="shower-panel" class="panel" role="tabpanel" aria-labelledby="tab-showers" hidden>
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">ANNUAL PEAK-DATE ESTIMATES</p>
+              <h2>Upcoming meteor showers</h2>
+              <p class="muted">Radiant altitude is estimated at 2 a.m. local time for your observing site.</p>
+            </div>
+          </div>
+          <div id="shower-list" class="shower-list"></div>
+          <p class="panel-note">Peak dates and rates are approximate recurring-calendar values. Actual viewing depends on darkness, moonlight, weather, and local sky conditions.</p>
+        </section>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Small-body orbital data and observer ephemerides: NASA/JPL Solar System Dynamics.
+          Location-based comet forecasts are altitude and brightness estimates, not guarantees of visibility.
+        </p>
+        <a href="https://ssd.jpl.nasa.gov/" target="_blank" rel="noreferrer">Data: NASA/JPL SSD <span aria-hidden="true">↗</span></a>
+      </footer>
+    </main>
+  </body>
+</html>
