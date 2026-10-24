@@ -8,6 +8,7 @@ Core features
 
 - Stargazing Mode: Real-time sky maps, constellation overlays, and augmented star labels to help users identify objects by eye or with binoculars.
 - Exploration Mode: Search and browse catalogs (stars, deep-sky objects, planets) with rich metadata and history.
+- Exoplanet Atlas: Visually explore confirmed exoplanet host stars from nearest to furthest, with illustrative planet details in [`apps/exoplanet-atlas/`](apps/exoplanet-atlas/).
 - Cosmic Watch: A standalone small-body tracker for near-Earth objects, asteroids, Kuiper Belt objects, comets, and location-aware observing forecasts.
 - Telescope Mode: Tools for pointing, alignment assistance, and integration hooks for telescope control (hardware/API adapters described in docs).
 - Analysis Mode: Photometry, light curve extraction, and basic image processing workflows for observational data.
@@ -26,6 +27,7 @@ ProjectStargate/
 ├── README.md
 ├── apps/
 │   ├── cosmic-watch/
+│   ├── exoplanet-atlas/
 │   └── star-distance-explorer/
 ├── docs/
 │   ├── PROJECT_VISION.md

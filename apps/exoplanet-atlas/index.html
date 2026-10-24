@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#080d1a">
+    <title>Exoplanet Atlas — Stargate</title>
+    <link rel="preconnect" href="https://exoplanetarchive.ipac.caltech.edu">
+    <link rel="stylesheet" href="./styles.css">
+    <script src="./app.js" type="module"></script>
+  </head>
+  <body>
+    <div class="sky-backdrop" aria-hidden="true"></div>
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="../../" aria-label="Project Stargate home">
+          <span class="brand-mark" aria-hidden="true">✳</span>
+          <span>STARGATE</span>
+        </a>
+        <span class="topbar-note">An atlas of other worlds</span>
+      </header>
+
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow"><span class="live-dot"></span> NASA EXOPLANET ARCHIVE</p>
+        <h1 id="page-title">Worlds around<br><span>distant suns.</span></h1>
+        <p class="intro-copy">
+          Travel outward from the Sun, star by star. Choose a system on the distance
+          slider, then select its star to meet the planets that orbit it.
+        </p>
+      </section>
+
+      <section class="atlas" aria-label="Exoplanet host star explorer">
+        <div class="distance-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">FROM OUR SUN · SORTED BY DISTANCE</p>
+              <h2>Choose a star system</h2>
+            </div>
+            <p id="catalog-summary" class="catalog-summary">Connecting to the archive…</p>
+          </div>
+          <div id="catalog-status" class="catalog-status" role="status" aria-live="polite">
+            <span class="loading-spinner" aria-hidden="true"></span>
+            <span>Loading confirmed exoplanet systems…</span>
+          </div>
+          <div id="slider-controls" class="slider-controls" hidden>
+            <div class="distance-labels">
+              <span>NEAREST</span>
+              <span id="selected-distance">— light-years</span>
+              <span>FURTHEST</span>
+            </div>
+            <label class="visually-hidden" for="star-slider">Choose a host star, nearest to furthest</label>
+            <input id="star-slider" type="range" min="0" max="0" value="0" step="1" disabled>
+            <div id="distance-ticks" class="distance-ticks" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <div class="explorer-grid">
+          <section class="star-stage" aria-labelledby="selected-star-title">
+            <div class="stage-orbit orbit-one" aria-hidden="true"></div>
+            <div class="stage-orbit orbit-two" aria-hidden="true"></div>
+            <div class="stage-orbit orbit-three" aria-hidden="true"></div>
+            <p class="stage-label">SELECTED SYSTEM</p>
+            <button id="star-button" class="star-button spectral-g" type="button" disabled aria-label="Select a star to explore">
+              <span class="star-halo" aria-hidden="true"></span>
+              <span class="star-core" aria-hidden="true"></span>
+              <span class="star-sparkle sparkle-one" aria-hidden="true"></span>
+              <span class="star-sparkle sparkle-two" aria-hidden="true"></span>
+            </button>
+            <h2 id="selected-star-title" class="selected-star-title">Waiting for the stars</h2>
+            <p id="star-subtitle" class="star-subtitle">The nearest confirmed systems will appear here.</p>
+            <p id="star-count" class="star-count">— host stars</p>
+            <p class="stage-hint">Select the star to reveal its planets</p>
+          </section>
+
+          <section id="planet-panel" class="planet-panel" aria-labelledby="planet-panel-title" aria-live="polite">
+            <div class="empty-detail">
+              <span class="empty-orbit" aria-hidden="true"><span></span></span>
+              <p class="eyebrow">A SYSTEM TO EXPLORE</p>
+              <h2 id="planet-panel-title">Every star has a story.</h2>
+              <p>Move the slider to choose a host star, then select the glowing star to see its confirmed planets.</p>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p>
+          Host-star distances and planet properties come from the NASA Exoplanet Archive.
+          Planet artwork is an illustrative interpretation of catalog values, not a photograph
+          or a verified view of the planet's surface.
+        </p>
+        <a href="https://exoplanetarchive.ipac.caltech.edu/" target="_blank" rel="noreferrer">
+          Data: NASA Exoplanet Archive <span aria-hidden="true">↗</span>
+        </a>
+      </footer>
+    </main>
+  </body>
+</html>
