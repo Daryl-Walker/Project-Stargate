@@ -301,6 +301,72 @@ h1 span {
   margin-bottom: 18px;
 }
 
+.closest-section {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid rgba(188, 205, 229, 0.1);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.closest-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.closest-heading h3 {
+  margin: 0;
+  color: #f0f2f7;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.closest-heading p,
+.closest-item p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.closest-list {
+  display: grid;
+  gap: 7px;
+}
+
+.closest-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 9px;
+  border-top: 1px solid rgba(188, 205, 229, 0.08);
+}
+
+.closest-item h4 {
+  margin: 0 0 3px;
+  color: #f0f2f7;
+  font-size: 0.76rem;
+  font-weight: 550;
+}
+
+.closest-item .closest-distance {
+  color: #cbbdff;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.closest-status {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.closest-status[hidden] {
+  display: none;
+}
+
 .list-status {
   padding: 20px 10px;
   color: #acb8ca;
@@ -541,6 +607,12 @@ h1 span {
 
   .panel-heading {
     align-items: flex-start;
+  }
+
+  .closest-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
   }
 
   .object-card,

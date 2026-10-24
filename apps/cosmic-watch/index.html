@@ -70,6 +70,14 @@
           </div>
           <label class="filter-label" for="object-filter">Filter this list</label>
           <input id="object-filter" class="text-input" type="search" placeholder="Search by name, designation, or orbit class" autocomplete="off">
+          <section class="closest-section" aria-labelledby="closest-title">
+            <div class="closest-heading">
+              <h3 id="closest-title">Closest across all categories</h3>
+              <p>Ranked by Earth MOID, not current distance.</p>
+            </div>
+            <div id="closest-status" class="closest-status" role="status" aria-live="polite">Loading objects across all categories…</div>
+            <div id="closest-list" class="closest-list"></div>
+          </section>
           <div id="list-status" class="list-status" role="status" aria-live="polite">Loading JPL object data…</div>
           <div id="object-list" class="object-list"></div>
         </section>

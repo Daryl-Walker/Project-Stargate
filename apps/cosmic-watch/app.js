@@ -33,6 +33,8 @@ const listSummary = document.querySelector("#list-summary");
 const listStatus = document.querySelector("#list-status");
 const objectList = document.querySelector("#object-list");
 const objectFilter = document.querySelector("#object-filter");
+const closestStatus = document.querySelector("#closest-status");
+const closestList = document.querySelector("#closest-list");
 const locationForm = document.querySelector("#location-form");
 const latitudeInput = document.querySelector("#latitude");
 const longitudeInput = document.querySelector("#longitude");
@@ -50,22 +52,22 @@ const categoryConfig = {
       sort: "moid",
       limit: LIST_LIMIT,
     },
-    description: "Ordered by minimum orbit distance from Earth",
+    description: "The three objects with the smallest Earth MOID (minimum orbit intersection distance)",
   },
   asteroids: {
     title: "Asteroid belt",
-    request: { "sb-class": "IMB,MBA,OMB", sort: "a", limit: LIST_LIMIT },
-    description: "Inner, main, and outer main-belt asteroids",
+    request: { "sb-class": "IMB,MBA,OMB", sort: "moid", limit: LIST_LIMIT },
+    description: "The three main-belt objects with the smallest Earth MOID",
   },
   kbos: {
     title: "Kuiper Belt objects",
-    request: { "sb-class": "TNO", sort: "a", limit: LIST_LIMIT },
-    description: "Trans-Neptunian objects ordered by orbital size",
+    request: { "sb-class": "TNO", sort: "moid", limit: LIST_LIMIT },
+    description: "The three Kuiper Belt objects with the smallest Earth MOID",
   },
   comets: {
     title: "Recent and upcoming comet perihelia",
     request: null,
-    description: "Perihelion passages from the last 90 days through the next year",
+    description: "The three comets with the smallest Earth MOID among recent and upcoming perihelia",
   },
 };
 
@@ -84,6 +86,7 @@ const meteorShowers = [
 
 let activeCategory = "neos";
 let cachedObjects = new Map();
+let pendingObjectRequests = new Map();
 let observingLocation = null;
 let cometForecasts = new Map();
 let isLoading = false;
@@ -119,38 +122,47 @@ function createObjectRecord(row, fields) {
   return Object.fromEntries(fields.map((field, index) => [field, row[index] ?? null]));
 }
 
-async function fetchObjectCategory(category) {
+function fetchObjectCategory(category) {
   if (cachedObjects.has(category)) {
-    return cachedObjects.get(category);
+    return Promise.resolve(cachedObjects.get(category));
+  }
+  if (pendingObjectRequests.has(category)) {
+    return pendingObjectRequests.get(category);
   }
 
-  const params = new URLSearchParams({
-    fields: OBJECT_FIELDS.join(","),
-    ...(categoryConfig[category].request || {
-      "sb-kind": "c",
-      "sb-cdata": JSON.stringify({
-        AND: [`tp|RG|${(currentJulianDate() - 90).toFixed(2)}|${(currentJulianDate() + 365).toFixed(2)}`],
+  const request = (async () => {
+    const params = new URLSearchParams({
+      fields: OBJECT_FIELDS.join(","),
+      ...(categoryConfig[category].request || {
+        "sb-kind": "c",
+        "sb-cdata": JSON.stringify({
+          AND: [`tp|RG|${(currentJulianDate() - 90).toFixed(2)}|${(currentJulianDate() + 365).toFixed(2)}`],
+        }),
+        sort: "moid",
+        limit: COMET_LIMIT,
       }),
-      sort: "tp",
-      limit: COMET_LIMIT,
-    }),
-  });
-  const response = await fetch(`${SBDB_QUERY_ENDPOINT}?${params}`);
-  if (!response.ok) {
-    throw new Error(`JPL SBDB request failed (${response.status} ${response.statusText}).`);
-  }
+    });
+    const response = await fetch(`${SBDB_QUERY_ENDPOINT}?${params}`);
+    if (!response.ok) {
+      throw new Error(`JPL SBDB request failed (${response.status} ${response.statusText}).`);
+    }
 
-  const payload = await response.json();
-  if (payload.code || !Array.isArray(payload.fields) || !Array.isArray(payload.data)) {
-    throw new Error(payload.message || "JPL SBDB returned an unexpected response.");
-  }
+    const payload = await response.json();
+    if (payload.code || !Array.isArray(payload.fields) || !Array.isArray(payload.data)) {
+      throw new Error(payload.message || "JPL SBDB returned an unexpected response.");
+    }
 
-  const records = payload.data.map((row) => createObjectRecord(row, payload.fields));
-  cachedObjects.set(category, records);
-  if (category === "comets") {
-    cometForecasts.clear();
-  }
-  return records;
+    const records = payload.data.map((row) => createObjectRecord(row, payload.fields));
+    cachedObjects.set(category, records);
+    if (category === "comets") {
+      cometForecasts.clear();
+    }
+    return records;
+  })();
+
+  const pendingRequest = request.finally(() => pendingObjectRequests.delete(category));
+  pendingObjectRequests.set(category, pendingRequest);
+  return pendingRequest;
 }
 
 function formatObjectName(object) {
@@ -233,9 +245,89 @@ function makeBadge(text, className = "") {
   return badge;
 }
 
+function closestApproachDistance(object) {
+  const moid = numberValue(object.moid);
+  if (moid !== null) {
+    return moid;
+  }
+
+  const moidLd = numberValue(object.moid_ld);
+  return moidLd === null ? null : moidLd * 0.00256955529;
+}
+
+function renderClosestObjects(recordsByCategory) {
+  const closest = recordsByCategory
+    .flatMap(({ category, records }) => records.map((object) => ({ object, category })))
+    .filter(({ object }) => closestApproachDistance(object) !== null)
+    .sort((first, second) => closestApproachDistance(first.object) - closestApproachDistance(second.object))
+    .slice(0, 3);
+
+  closestList.replaceChildren();
+  if (closest.length === 0) {
+    closestStatus.hidden = false;
+    closestStatus.textContent = "No objects with Earth MOID data were returned.";
+    return;
+  }
+
+  closestStatus.hidden = true;
+  for (const { object, category } of closest) {
+    const item = document.createElement("article");
+    item.className = "closest-item";
+    const details = document.createElement("div");
+    const name = document.createElement("h4");
+    name.textContent = formatObjectName(object);
+    const categoryLabel = document.createElement("p");
+    categoryLabel.textContent = `${category} · ${object.class || "Class unavailable"}`;
+    details.append(name, categoryLabel);
+    const distance = document.createElement("p");
+    distance.className = "closest-distance";
+    distance.textContent = `${displayValue(closestApproachDistance(object), 8)} au`;
+    item.append(details, distance);
+    closestList.append(item);
+  }
+}
+
+async function loadClosestObjects(forceRefresh = false) {
+  closestList.replaceChildren();
+  closestStatus.hidden = false;
+  closestStatus.textContent = "Loading objects across all categories…";
+  if (forceRefresh) {
+    for (const category of Object.keys(categoryConfig)) {
+      cachedObjects.delete(category);
+    }
+    cometForecasts.clear();
+  }
+
+  try {
+    const recordsByCategory = await Promise.all(
+      Object.entries(categoryConfig).map(async ([category, config]) => ({
+        category: config.title,
+        records: await fetchObjectCategory(category),
+      })),
+    );
+    renderClosestObjects(recordsByCategory);
+  } catch (error) {
+    console.error("Unable to load objects for the closest-object summary.", error);
+    closestStatus.hidden = false;
+    closestStatus.textContent = `Could not load objects across all categories. ${error.message}`;
+  }
+}
+
 function renderObjectList(records) {
   const query = objectFilter.value.trim().toLocaleLowerCase();
-  const filtered = records.filter((object) => (
+  const ordered = [...records].sort((first, second) => {
+    const firstDistance = closestApproachDistance(first);
+    const secondDistance = closestApproachDistance(second);
+    if (firstDistance === null) {
+      return secondDistance === null ? 0 : 1;
+    }
+    if (secondDistance === null) {
+      return -1;
+    }
+    return firstDistance - secondDistance;
+  });
+
+  const filtered = ordered.filter((object) => (
     !query || [
       object.name,
       object.full_name,
@@ -244,7 +336,9 @@ function renderObjectList(records) {
     ].some((value) => String(value || "").toLocaleLowerCase().includes(query))
   ));
 
-  objectList.replaceChildren(...filtered.map(createObjectCard));
+  const displayRecords = filtered.slice(0, 3);
+
+  objectList.replaceChildren(...displayRecords.map(createObjectCard));
   if (filtered.length === 0) {
     listStatus.hidden = false;
     listStatus.textContent = query ? "No objects in this list match that filter." : "No matching objects were returned.";
@@ -278,7 +372,7 @@ async function loadCategory(category, forceRefresh = false) {
   try {
     const records = await fetchObjectCategory(category);
     if (activeCategory === category) {
-      listSummary.textContent = `${records.length} objects shown · ${config.description}`;
+      listSummary.textContent = `${Math.min(records.length, 3)} objects shown · ${config.description}`;
       renderObjectList(records);
     }
   } catch (error) {
@@ -476,7 +570,8 @@ function renderMeteorShowers() {
   showerList.replaceChildren();
   const showers = [...meteorShowers]
     .map((shower) => ({ ...shower, peak: nextShowerPeak(shower) }))
-    .sort((first, second) => first.peak - second.peak);
+    .sort((first, second) => first.peak - second.peak)
+    .slice(0, 3);
 
   for (const shower of showers) {
     const card = document.createElement("article");
@@ -524,6 +619,7 @@ for (const tab of categoryTabs) {
 }
 
 document.querySelector("#refresh-list").addEventListener("click", () => {
+  loadClosestObjects(true);
   loadCategory(activeCategory, true);
 });
 
@@ -567,4 +663,5 @@ useLocationButton.addEventListener("click", () => {
 });
 
 renderMeteorShowers();
+loadClosestObjects();
 loadCategory("neos");
